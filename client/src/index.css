@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Tailwind CSS classes with @apply */
+
+.sidebar-container {
+  @apply bg-gray-50 border-r border-gray-200  shadow-lg;
+}
+
+.btn {
+    @apply text-left pl-3 py-5 text-lg transition ease-in-out bg-gray-100 border-b-2 border-gray-400 hover:bg-gray-200 font-semibold;
+    color: #333; /* Darker text for better readability */
+  }
+  
+  .btn-active {
+    @apply bg-gray-300;
+  }
+  
+  /* Additional styles */
+  .btn:hover {
+    @apply transform scale-105;
+  }
+  
