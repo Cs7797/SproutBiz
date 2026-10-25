@@ -103,6 +103,12 @@ app.use((err, req, res, next) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "SproutBiz backend is running",
+  });
+});
 // Vercel imports the Express app; local development starts a server.
 if (!process.env.VERCEL) {
   app.listen(port, () => {
