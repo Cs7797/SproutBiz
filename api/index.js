@@ -1,81 +1,102 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-import champaignRouter from './routes/champaignRoutes.js'
-import userRouter from './routes/userRoutes.js'
-import adminRouter from './routes/adminRoutes.js'
 
+import champaignRouter from "./routes/champaignRoutes.js";
+import userRouter from "./routes/userRoutes.js";
+import adminRouter from "./routes/adminRoutes.js";
 
-
-dotenv.config();
-console.log(
-  "Stripe secret key loaded:",
-  Boolean(process.env.STRIPE_SECRET_KEY),
-);
 const app = express();
 const port = Number(process.env.PORT) || 8000;
-const maxPortAttempts = 10;
 
-try {
-  console.log("Connecting to MongoDB...");
-  await mongoose.connect(process.env.MONGO_URL, { serverSelectionTimeoutMS: 10000 });
-  console.log("MongoDb is connected succesfully");
-} catch (error) {
-  console.log("error occured during Mongodb connection");
-  console.error(error.message);
-  
-}
+// Allow the frontend to call the API from a different origin.
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.FRONTEND_URL,
+  ].filter(Boolean);
 
+  const origin = req.headers.origin;
 
-app.use(cookieParser())
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization",
+    );
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+    );
+  }
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
+app.use(cookieParser());
 app.use(express.json());
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
-}));
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "local-development-only",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    },
+  }),
+);
 
-app.use('/api/champaign',champaignRouter)
-app.use('/api/user',userRouter)
-app.use('/api/admin',adminRouter)
+// Ensure MongoDB is connected before processing API requests.
+app.use(async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      if (!process.env.MONGO_URL) {
+        throw new Error("MONGO_URL is not configured");
+      }
 
+      await mongoose.connect(process.env.MONGO_URL, {
+        serverSelectionTimeoutMS: 10000,
+      });
+    }
+
+    next();
+  } catch (error) {
+    console.error("MongoDB connection failed:", error.message);
+    res.status(503).json({
+      success: false,
+      message: "Database connection unavailable",
+    });
+  }
+});
+
+app.use("/api/champaign", champaignRouter);
+app.use("/api/user", userRouter);
+app.use("/api/admin", adminRouter);
 
 app.use((err, req, res, next) => {
-  const statuscode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-  return res.status(statuscode).json({
+  const statusCode = err.statusCode || 500;
+
+  res.status(statusCode).json({
     success: false,
-    statuscode,
-    message,
+    statuscode: statusCode,
+    message: err.message || "Internal Server Error",
   });
 });
 
-const startServer = (basePort, attempt = 0) => {
-  const currentPort = basePort + attempt;
-  const server = app.listen(currentPort, () => {
-    console.log(`server is running on port ${currentPort}`);
+// Vercel imports the Express app; local development starts a server.
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
   });
+}
 
-  server.on("error", (error) => {
-    if (error.code === "EADDRINUSE" && attempt < maxPortAttempts) {
-      console.warn(`Port ${currentPort} is in use. Trying ${currentPort + 1}...`);
-      startServer(basePort, attempt + 1);
-      return;
-    }
-
-    if (error.code === "EADDRINUSE") {
-      console.error(
-        `Could not find an open port between ${basePort} and ${basePort + maxPortAttempts}. Set a different PORT in .env.`
-      );
-      process.exit(1);
-    }
-
-    console.error("Server failed to start:", error.message);
-    process.exit(1);
-  });
-};
-
-startServer(port);
+export default app;

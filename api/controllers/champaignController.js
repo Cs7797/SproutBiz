@@ -1,16 +1,17 @@
 import "dotenv/config";
+import Stripe from "stripe";
+
 import Champaign from "../models/champaignModel.js";
 import User from "../models/userModel.js";
 import { errorHandler } from "../utils/error.js";
 import mongoose from "mongoose";
-import Stripe from "stripe";
 
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 
-console.log("Stripe key available in controller:", Boolean(stripeKey));
-
 if (!stripeKey) {
-  throw new Error("STRIPE_SECRET_KEY is missing from the backend environment.");
+  throw new Error(
+    "STRIPE_SECRET_KEY is missing. Check the root .env file and environment loading.",
+  );
 }
 
 const stripe = new Stripe(stripeKey);
@@ -306,13 +307,19 @@ export const payment = async (req, res, next) => {
 
     req.session.products = products;
 
+    
+    const frontendUrl = (
+      process.env.FRONTEND_URL || "http://localhost:5173"
+    ).replace(/\/$/, "");
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: items,
       mode: "payment",
-      success_url: "http://localhost:5173/success",
-      cancel_url: "http://localhost:5173/",
+      success_url: `${frontendUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${frontendUrl}/`,
     });
+
 
     return res.json({ url: session.url });
   } catch (error) {
