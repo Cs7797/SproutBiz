@@ -156,6 +156,15 @@ const DetailedChampaign = () => {
       </div>
     );
 
+  const amountRequired = Number(data.amountRequired);
+  const amountGained = Number(data.amountGained);
+  const fundingPercentage =
+    Number.isFinite(amountRequired) &&
+    amountRequired > 0 &&
+    Number.isFinite(amountGained)
+      ? Math.min(Math.max(Math.round((amountGained / amountRequired) * 100), 0), 100)
+      : 0;
+
   return (
     <div className="container max-w-[1280px] p-[2rem] detailCamapaign mx-auto md:p-4 mb-10">
       <ToastContainer
@@ -281,11 +290,10 @@ const DetailedChampaign = () => {
               <b>{data.amountGained}</b> USD raised of {data.amountRequired}{" "}
               goal
             </h1>
-            <ProgressBar
-              value={Math.round(
-                (data.amountGained / data.amountRequired) * 100,
-              )}
-            />
+            <div className="mb-1 text-right text-sm font-semibold text-gray-700">
+              {fundingPercentage}%
+            </div>
+            <ProgressBar value={fundingPercentage} />
 
             <div className="mb-4 py-1">
               {data.amountGained === data.amountRequired && (
