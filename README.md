@@ -1,5 +1,5 @@
 # 🌱 SproutBiz
-
+## Check it out- https://sproutbiz-main.vercel.app/
 **A Crowdfunding and Investment Platform**
 
 SproutBiz is a full-stack crowdfunding and investment web application that connects founders seeking funding with users interested in supporting their campaigns. It provides campaign discovery, investment tracking, user profiles, and payment functionality through a React frontend and a Node.js/Express backend.
