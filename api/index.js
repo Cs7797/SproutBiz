@@ -14,12 +14,14 @@ const app = express();
 const port = Number(process.env.PORT) || 8000;
 
 // Allow the frontend to call the API from a different origin.
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    "http://localhost:5173",
-    process.env.FRONTEND_URL,
-  ].filter(Boolean);
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://sproutbiz-main.vercel.app",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use((req, res, next) => {
   const origin = req.headers.origin;
 
   if (origin && allowedOrigins.includes(origin)) {
@@ -33,6 +35,7 @@ app.use((req, res, next) => {
       "Access-Control-Allow-Methods",
       "GET, POST, PUT, PATCH, DELETE, OPTIONS",
     );
+    res.setHeader("Vary", "Origin");
   }
 
   if (req.method === "OPTIONS") {
@@ -41,6 +44,7 @@ app.use((req, res, next) => {
 
   next();
 });
+
 
 app.use(cookieParser());
 app.use(express.json());
