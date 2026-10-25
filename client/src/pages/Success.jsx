@@ -1,179 +1,135 @@
-import { useState, useEffect } from "react";
-import { api, apiFetch } from "../lib/api";
-import Loader from "../components/Loader";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { apiFetch } from "../lib/api";
 
 const Success = () => {
-  
-  const isBuffer = sessionStorage.getItem("isBuffer");
-  const [products, setProducts] = useState([]);
-  const [bufferMoney, setBufferMoney] = useState(
-    isBuffer == "true" ? true : false
-  );
-  const [investmentProcessed, setInvestmentProcessed] = useState(false);
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get("session_id");
+  const [status, setStatus] = useState("loading");
+  const [investment, setInvestment] = useState(null);
+  const [message, setMessage] = useState("");
+  const [retry, setRetry] = useState(0);
+
   useEffect(() => {
-    const fetchSessionData = async () => {
+    let active = true;
+
+    const verify = async () => {
+      if (!sessionId) {
+        setStatus("failed");
+        setMessage("The payment link is missing its Checkout Session ID.");
+        return;
+      }
+
+      setStatus("loading");
+      setMessage("");
       try {
-        const response = await api.get("/api/champaign/session"); //
-        setProducts(response.data.products);
+        const response = await apiFetch("/api/champaign/payment/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        });
+        const result = await response.json();
+
+        if (!active) return;
+        if (result.status === "pending") {
+          setStatus("pending");
+          setMessage(result.message || "Your payment is still processing.");
+          return;
+        }
+        if (!response.ok || !result.recorded || !result.investment) {
+          throw new Error(result.message || "We could not verify this payment.");
+        }
+
+        setInvestment(result.investment);
+        setStatus("paid");
       } catch (error) {
-        console.error("Error fetching session data:", error);
+        if (!active) return;
+        setStatus("failed");
+        setMessage(error.message || "We could not verify this payment. Please try again.");
       }
     };
 
-    fetchSessionData();
-  }, []);
- useEffect(() => {
-   console.log("Products:", products);
-   console.log("Campaign ID:", products[0]?.champaignID);
-   console.log("Investment processed:", investmentProcessed);
-
-   const updateInvestment = async () => {
-     if (!investmentProcessed && products.length > 0) {
-       console.log("Attempting investment POST...");
-
-       try {
-         const res = await apiFetch(
-           `/api/champaign/invested/${products[0].champaignID}`,
-           {
-             method: "POST",
-             headers: {
-               "Content-Type": "application/json",
-             },
-             credentials: "include",
-             body: JSON.stringify({
-               invested: Number(products[0].invested),
-               equity: Number(products[0].equity),
-             }),
-           },
-         );
-
-         console.log("Investment POST status:", res.status);
-
-         const data = await res.json();
-         console.log("Investment POST response:", data);
-
-         if (!res.ok) {
-           throw new Error(data.message || "Investment update failed");
-         }
-
-         
-
-         setBufferMoney(Boolean(data.isBuffer));
-         setInvestmentProcessed(true);
-       } catch (error) {
-         console.error("Investment update failed:", error);
-       }
-     }
-   };
-
-   if (products[0]?.champaignID) {
-     updateInvestment();
-   }
- }, [products, investmentProcessed]);
-
-  if (products.length < 1)
-    return (
-      <div>
-        {" "}
-        <Loader />{" "}
-      </div>
-    );
+    verify();
+    return () => {
+      active = false;
+    };
+  }, [sessionId, retry]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen ">
-      {!bufferMoney ? (
-        <div className="bg-slate-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-          <img
-            src={products[0].coverImage}
-            alt={products[0].title}
-            className="w-32 h-32 mx-auto mb-4 rounded-full"
-          />
-          <h1 className="text-3xl font-semibold mb-4">{products[0].title}</h1>
-          {products.length > 0 && (
-            <div className="mb-6">
-              <p className="text-lg mb-2">
-                You have successfully invested in <br />{" "}
-                <span className="font-semibold">{products[0].title}</span>{" "}
-                Campaign.
-              </p>
-              <p className="text-lg mb-2">
-                You have invested{" "}
-                <span className="font-semibold">${products[0].invested}</span>{" "}
-                with a tip of{" "}
-                <span className="font-semibold">${products[0].tip}</span>.
-              </p>
-              <p className="text-lg mb-2">
-                You are now a shareholder of{" "}
-                <span className="font-semibold">{products[0].equity}%</span> of
-                this campaign.
-              </p>
-            </div>
-          )}
+    <main className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center px-6 text-center">
+      {status === "loading" && (
+        <>
+          <h1 className="mb-3 text-3xl font-bold">Verifying your payment</h1>
+          <p>Please wait while we confirm the payment with Stripe.</p>
+        </>
+      )}
 
-          <p className="mb-4">
-            <Link
-              to="/"
-              className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded mr-2"
-            >
-              Go to Home Page
-            </Link>
-            <Link
-              to={`/detailedChamapaign/${products[0].champaignID}`}
-              className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-            >
-              Go to Campaign
-            </Link>
-          </p>
-        </div>
-      ) : (
-        <div className="bg-slate-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-          <img
-            src={products[0].coverImage}
-            alt={products[0].title}
-            className="w-32 h-32 mx-auto mb-4 rounded-full"
-          />
-          <h1 className="text-3xl font-semibold mb-4">{products[0].title}</h1>
-          {products.length > 0 && (
-            <div className="mb-6">
-              <p className="text-lg mb-2">
-                You have successfully invested in{" "}
-                <span className="font-bold">buffer account</span> of
-                <br />{" "}
-                <span className="font-semibold">{products[0].title}</span>{" "}
-                Campaign .
-              </p>
-              <p className="text-lg mb-2">
-                You have invested{" "}
-                <span className="font-semibold">${products[0].invested}</span>{" "}
-                with a tip of{" "}
-                <span className="font-semibold">${products[0].tip}</span>.
-              </p>
-              <p className="text-lg mb-2">
-                You may become shareholder of{" "}
-                <span className="font-semibold">{products[0].equity}%</span> of
-                this campaign.
-              </p>
-            </div>
-          )}
+      {status === "pending" && (
+        <>
+          <h1 className="mb-3 text-3xl font-bold">Payment processing</h1>
+          <p className="mb-5">{message}</p>
+          <button
+            className="mb-4 rounded bg-blue-600 px-4 py-2 text-white"
+            onClick={() => setRetry((value) => value + 1)}
+          >
+            Check again
+          </button>
+        </>
+      )}
 
-          <p className="mb-4">
-            <Link
-              to="/"
-              className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded mr-2"
-            >
-              Go to Home Page
-            </Link>
-            <Link
-              to={`/detailedChamapaign/${products[0].champaignID}`}
-              className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-            >
-              Go to Campaign
-            </Link>
+      {status === "failed" && (
+        <>
+          <h1 className="mb-3 text-3xl font-bold">Payment not confirmed</h1>
+          <p className="mb-5">{message}</p>
+          <button
+            className="mb-4 rounded bg-blue-600 px-4 py-2 text-white"
+            onClick={() => setRetry((value) => value + 1)}
+          >
+            Try again
+          </button>
+          <Link className="mb-4 text-blue-700 underline" to="/signin">
+            Sign in and check again
+          </Link>
+        </>
+      )}
+
+      {status === "paid" && investment && (
+        <div className="w-full rounded-lg bg-slate-100 p-8 shadow-lg">
+          {investment.coverImage && (
+            <img
+              src={investment.coverImage}
+              alt={investment.title}
+              className="mx-auto mb-4 h-32 w-32 rounded-full object-cover"
+            />
+          )}
+          <h1 className="mb-4 text-3xl font-semibold">Payment confirmed</h1>
+          <p className="mb-2">
+            Your ${investment.invested.toFixed(2)} investment in {investment.title} has been recorded.
           </p>
+          {investment.tip > 0 && (
+            <p className="mb-2">Your ${investment.tip.toFixed(2)} tip was included in the charge.</p>
+          )}
+          <p className="mb-6">
+            {investment.isBuffer ? "Potential buffer equity recorded:" : "Equity recorded:"} {investment.equity}%
+          </p>
+          <Link className="mr-3 rounded bg-blue-600 px-4 py-2 text-white" to="/">
+            Home
+          </Link>
+          <Link
+            className="rounded bg-blue-600 px-4 py-2 text-white"
+            to={`/detailedChamapaign/${investment.campaignId}`}
+          >
+            View campaign
+          </Link>
         </div>
       )}
-    </div>
+
+      {status !== "paid" && (
+        <Link className="mt-4 text-blue-700 underline" to="/">
+          Return home
+        </Link>
+      )}
+    </main>
   );
 };
 

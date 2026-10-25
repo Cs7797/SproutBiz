@@ -65,6 +65,7 @@ const champaignSchema = new mongoose.Schema(
           investorID: String,
           equity: Number,
           invested: Number,
+          paymentId: String,
           isBuffer:{
             type:Boolean,
             default:false

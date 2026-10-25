@@ -7,7 +7,6 @@ import { BiSolidEditAlt } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import StatusIndicator from "../components/StatusIndicator";
 import { useSelector } from "react-redux";
-import { loadStripe } from "@stripe/stripe-js";
 import MetaMask from "../components/MetaMask";
 
 import { ToastContainer, toast } from "react-toastify";

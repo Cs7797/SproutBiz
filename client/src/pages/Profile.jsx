@@ -36,11 +36,15 @@ const Profile = () => {
 
           return investments.reduce((updatedCampaign, investment) => {
             if (investment.isBuffer) {
-              updatedCampaign.bufferEquityHolder = investment.equity;
-              updatedCampaign.bufferInvested = investment.invested;
+              updatedCampaign.bufferEquityHolder =
+                (updatedCampaign.bufferEquityHolder ?? 0) + investment.equity;
+              updatedCampaign.bufferInvested =
+                (updatedCampaign.bufferInvested ?? 0) + investment.invested;
             } else {
-              updatedCampaign.equityHolder = investment.equity;
-              updatedCampaign.invested = investment.invested;
+              updatedCampaign.equityHolder =
+                (updatedCampaign.equityHolder ?? 0) + investment.equity;
+              updatedCampaign.invested =
+                (updatedCampaign.invested ?? 0) + investment.invested;
             }
             return updatedCampaign;
           }, { ...campaign });

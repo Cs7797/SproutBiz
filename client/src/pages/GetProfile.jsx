@@ -27,13 +27,18 @@ const params=useParams()
   useEffect(() => {
     if (data) {
       const updatedChampaigns = data.investedChampaigns.map((item) => {
-        const investedItem = data.user.invested.find(
-          (investedItem) => investedItem.champaignID === item._id
+        const investedItems = data.user.invested.filter(
+          (investedItem) => investedItem.champaignID === item._id,
         );
-        if (investedItem) {
-          item.equityHolder = investedItem.equity;
-          item.invested = investedItem.invested;
-        }
+        investedItems.forEach((investedItem) => {
+          if (investedItem.isBuffer) {
+            item.bufferEquityHolder = (item.bufferEquityHolder ?? 0) + investedItem.equity;
+            item.bufferInvested = (item.bufferInvested ?? 0) + investedItem.invested;
+          } else {
+            item.equityHolder = (item.equityHolder ?? 0) + investedItem.equity;
+            item.invested = (item.invested ?? 0) + investedItem.invested;
+          }
+        });
         return item;
       });
 

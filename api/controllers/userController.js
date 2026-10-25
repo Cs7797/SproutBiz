@@ -30,6 +30,8 @@ export const signInUser = async (req, res, next) => {
     res
       .cookie("access_token", token, {
         httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         expires: new Date(Date.now() + 99999999999),
       })
       .status(200)

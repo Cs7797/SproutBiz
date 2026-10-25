@@ -32,6 +32,7 @@ function App() {
         <WithLocationErrorBoundary>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/success" element={<Success />} />
             <Route element={<IsLogin />}>
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
@@ -50,14 +51,13 @@ function App() {
             <Route path="/getProfile/:id" element={<GetProfile />} />
 
             <Route element={<PrivateRoute />}>
-              <Route path="/success" element={<Success />} />
               <Route path="/createBatch/:id" element={<CreateBatch />} />
               <Route path="/createChampaign" element={<CreateChampaign />} />
               <Route
                 path="/updateChampaign/:id"
                 element={<UpdateChampaign />}
               />
-              <Route path="/profile" element={<Profile />}/>
+              <Route path="/profile" element={<Profile />} />
               <Route element={<AdminRoute />}>
                 <Route path="/adminProfile" element={<AdminProfile />} />
               </Route>
