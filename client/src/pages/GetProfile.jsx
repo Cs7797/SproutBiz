@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import { useEffect, useState } from "react";
 import Loader from "../components/Loader";
 import InvestmentCard from "../components/InvestmentCard";
@@ -11,7 +12,7 @@ const params=useParams()
   useEffect(() => {
     const getUserData = async () => {
       try {
-        const res = await fetch(`/api/admin/getProfile/${params.id}`);
+        const res = await apiFetch(`/api/admin/getProfile/${params.id}`);
         const data = await res.json();
 
         setData(data);

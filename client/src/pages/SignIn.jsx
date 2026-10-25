@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import { useState } from "react";
 import "./authStyle.css";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +22,7 @@ export default function SignIn() {
     e.preventDefault();
     try {
       dispatch(signInStart());
-      const res = await fetch("/api/user/signin", {
+      const res = await apiFetch("/api/user/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
 import { useEffect, useState } from "react";
@@ -29,7 +30,7 @@ const DetailedChampaign = () => {
 
   useEffect(() => {
     const getChampaign = async (id) => {
-      const res = await fetch(`/api/champaign/getSpecChampaign/${id}`);
+      const res = await apiFetch(`/api/champaign/getSpecChampaign/${id}`);
       const data = await res.json();
       setData(data);
       if (data.userRef === currentUser?._id) setIsOwner(true);
@@ -90,7 +91,7 @@ const DetailedChampaign = () => {
         ],
       };
 
-      const res = await fetch(`/api/champaign/payment/${params.id}`, {
+      const res = await apiFetch(`/api/champaign/payment/${params.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +130,7 @@ const DetailedChampaign = () => {
       );
     } else {
       try {
-        const res = await fetch(`/api/champaign/delete/${params.id}`, {
+        const res = await apiFetch(`/api/champaign/delete/${params.id}`, {
           method: "DELETE",
         });
         const data = await res.json();

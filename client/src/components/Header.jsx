@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -31,7 +32,7 @@ export default function Header() {
   const handleLogOut = async () => {
     dispatch(logOutUserStart());
     try {
-      const res = await fetch(`/api/user/logout`);
+      const res = await apiFetch(`/api/user/logout`);
       const data = await res.json();
       if (data.success == false) {
         dispatch(logOutUserFail(data.message));

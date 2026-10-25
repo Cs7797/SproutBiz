@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { formatBalance } from "../utils/";
@@ -132,7 +133,7 @@ const navigate=useNavigate()
         ],
       });
       console.log(txHash);
-      const res = await fetch(`/api/champaign/invested/${data._id}`, {
+      const res = await apiFetch(`/api/champaign/invested/${data._id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ invested: usdPrice, equity }),

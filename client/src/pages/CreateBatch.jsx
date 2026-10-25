@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -37,7 +38,7 @@ const CreateBatch = () => {
     }
     if (valid) {
       try {
-        const res = await fetch(`/api/champaign/createBatches/${params.id}`, {
+        const res = await apiFetch(`/api/champaign/createBatches/${params.id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

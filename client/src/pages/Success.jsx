@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { api, apiFetch } from "../lib/api";
 import Loader from "../components/Loader";
 import { Link } from "react-router-dom";
 
@@ -14,7 +14,7 @@ const Success = () => {
   useEffect(() => {
     const fetchSessionData = async () => {
       try {
-        const response = await axios.get("/api/champaign/session"); //
+        const response = await api.get("/api/champaign/session"); //
         setProducts(response.data.products);
       } catch (error) {
         console.error("Error fetching session data:", error);
@@ -33,7 +33,7 @@ const Success = () => {
        console.log("Attempting investment POST...");
 
        try {
-         const res = await fetch(
+         const res = await apiFetch(
            `/api/champaign/invested/${products[0].champaignID}`,
            {
              method: "POST",

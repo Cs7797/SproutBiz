@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import { useEffect, useState } from "react";
 import Loader from "../components/Loader";
 import CampaignCard from "../components/CampaignCard";
@@ -16,8 +17,8 @@ const AdminProfile = () => {
     const fetchData = async () => {
       try {
         const [userRes, campaignRes] = await Promise.all([
-          fetch("api/admin/allUsers"),
-          fetch("api/admin/allCampaigns"),
+          apiFetch("api/admin/allUsers"),
+          apiFetch("api/admin/allCampaigns"),
         ]);
 
         const [userData, campaignData] = await Promise.all([

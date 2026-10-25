@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -42,7 +43,7 @@ const CreateCampaign = () => {
     }
     if (valid) {
      try {
-      const res=await fetch('/api/champaign/create',{
+      const res=await apiFetch('/api/champaign/create',{
         method: "POST",
         headers: {
           "Content-Type": "application/json",

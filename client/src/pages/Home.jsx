@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -18,7 +19,7 @@ const Home = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await fetch("/api/champaign/getAllChampaigns");
+        const res = await apiFetch("/api/champaign/getAllChampaigns");
         const responseData = await res.json();
         if (!res.ok) {
           setErrorMessage(responseData?.message || "Failed to load campaigns.");

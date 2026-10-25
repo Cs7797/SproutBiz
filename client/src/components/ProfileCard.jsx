@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 /* eslint-disable react/prop-types */
 import { Link } from "react-router-dom";
 import ProfilePic from "../assets/profile.avif";
@@ -9,7 +10,7 @@ const ProfileCard = ({ item }) => {
   const [profileItem, setProfileItem] = useState(item);
   const handleVerifyClick = async () => {
     try {
-      const res = await fetch(`/api/admin/verify/${item._id}`);
+      const res = await apiFetch(`/api/admin/verify/${item._id}`);
       const verified = await res.json();
       if (verified.success == false) {
         setError(verified.message);

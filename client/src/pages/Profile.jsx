@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
@@ -18,7 +19,7 @@ const Profile = () => {
   useEffect(() => {
     const getUserData = async () => {
       try {
-        const res = await fetch("/api/user/profile");
+        const res = await apiFetch("/api/user/profile");
         const responseData = await res.json();
 
         if (!res.ok || !responseData?.user) {
@@ -63,7 +64,7 @@ const Profile = () => {
   const handleVerifySubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/user/verifyProfile`, {
+      const res = await apiFetch(`/api/user/verifyProfile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

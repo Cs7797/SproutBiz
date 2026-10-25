@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import { useState, useEffect } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
@@ -12,7 +13,7 @@ const UpdateChampaign = () => {
   const params = useParams();
   const fetchData = async () => {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/champaign/getSpecChampaign/${params.id}`
       ); // replace with your backend endpoint
       const data = await response.json();
@@ -37,7 +38,7 @@ const navigate=useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-     const res= await fetch(`/api/champaign/updateChampaign/${params.id}`, {
+     const res= await apiFetch(`/api/champaign/updateChampaign/${params.id}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...champaignData}),

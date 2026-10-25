@@ -1,3 +1,4 @@
+import { apiFetch } from "../lib/api";
 import  { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import Loader from '../components/Loader';
@@ -15,7 +16,7 @@ const SearchResult = () => {
     useEffect(() => {
         const getSearchRes = async (queryTerm) => {
           try {
-            const res = await fetch(`/api/champaign/search?searchTerm=${queryTerm}`);
+            const res = await apiFetch(`/api/champaign/search?searchTerm=${queryTerm}`);
             const resdata = await res.json();
             setData(resdata);
           } catch (error) {
