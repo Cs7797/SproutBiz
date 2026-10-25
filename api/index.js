@@ -18,18 +18,19 @@ const port = Number(process.env.PORT) || 8000;
 const allowedOrigins = [
   "http://localhost:5173",
   "https://sproutbiz-main.vercel.app",
-  process.env.FRONTEND_URL,
-].filter(Boolean);
+];
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
+
+  console.log("CORS request origin:", origin);
 
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "Content-Type, Authorization",
+      "Origin, Content-Type, Authorization",
     );
     res.setHeader(
       "Access-Control-Allow-Methods",
@@ -44,7 +45,6 @@ app.use((req, res, next) => {
 
   next();
 });
-
 
 app.use(cookieParser());
 app.use(express.json());
