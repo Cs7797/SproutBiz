@@ -13,7 +13,7 @@ const Footer = () => {
     window.location.href = mailtoLink;
   };
   return (
-    <footer className="bg-[#1f2937] relative  bottom-0 w-full text-white p-6">
+    <footer className="site-footer relative bottom-0 w-full text-white p-6">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-start  space-y-6 md:space-y-0">
         <div className="md:w-2/5 md:pr-14">
           <h2 className="text-lg font-bold mb-2">SproutBiz</h2>

@@ -27,10 +27,11 @@ import Error from "./pages/Error";
 function App() {
   return (
     <BrowserRouter>
-      <Header />
-      <div className="main mb-20">
-        <WithLocationErrorBoundary>
-          <Routes>
+      <div className="site-shell">
+        <Header />
+        <div className="main mb-20">
+          <WithLocationErrorBoundary>
+            <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/success" element={<Success />} />
             <Route element={<IsLogin />}>
@@ -63,10 +64,11 @@ function App() {
               </Route>
             </Route>
             <Route path="*" element={<Navigate to="/error" replace />} />
-          </Routes>
-        </WithLocationErrorBoundary>
+            </Routes>
+          </WithLocationErrorBoundary>
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </BrowserRouter>
   );
 }

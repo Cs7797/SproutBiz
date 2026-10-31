@@ -80,7 +80,7 @@ const AdminProfile = () => {
   if (!users && !campaigns) return <Loader />;
 
   return (
-    <div className="flex">
+    <div className="admin-dashboard flex">
       <div className="sidebar-container w-1/4 md:relative">
         <div className="flex flex-col md:sticky md:top-0">
           {[

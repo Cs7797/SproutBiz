@@ -52,25 +52,25 @@ export default function Header() {
     };
   }, []);
   return (
-    <div className="">
-      <div className="lg:hidden  flex  justify-between items-center p-2 bg-[#1f2937] text-white">
+    <div className="site-header">
+      <div className="header-mobile lg:hidden flex justify-between items-center p-2 text-white">
         <div className="flex items-center">
           <div className="flex  items-center font-bold">
             <img src={Logo} className="h-10 pb-1" alt="logo" />
-            <Link to="/" className="no-underline">
+            <Link to="/" className="brand-link no-underline">
               SproutBiz
             </Link>
           </div>
         </div>
         <form action="submit" onSubmit={handleSearchSubmit}>
           <div className="flex">
-            <input
+              <input
               type="text"
               required
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search Campaigns..."
-              className="p-1  px-4 rounded-full mx-auto  bg-[#374151] w-[80%]"
+              className="header-search p-1 px-4 rounded-full mx-auto w-[80%]"
             />
           </div>
         </form>
@@ -82,7 +82,7 @@ export default function Header() {
             &#9776;
           </button>
           {menuOpen && (
-            <div className="lg:hidden h-[50%] rounded-bl-lg z-20  absolute top-14 right-0 bg-[#263447] text-white p-2">
+            <div className="mobile-menu lg:hidden h-[50%] rounded-bl-lg z-20 absolute top-14 right-0 text-white p-2">
               <nav>
                 <ul className="flex flex-col text-2xl text-gray-300 space-y-6 list-none items-left m-6 p-0">
                   <li className="mb-2">
@@ -129,11 +129,11 @@ export default function Header() {
         </div>
       </div>
 
-      <div className="hidden lg:flex  justify-between items-center p-2 bg-[#1f2937] text-white">
+      <div className="header-desktop hidden lg:flex justify-between items-center p-2 text-white">
         <div className="flex items-center ">
           <div className="flex text-2xl items-center font-bold">
             <img src={Logo} className="h-12 pb-1" alt="logo" />
-            <Link to="/" className="no-underline pl-2">
+            <Link to="/" className="brand-link no-underline pl-2">
               SproutBiz
             </Link>
           </div>
@@ -146,7 +146,7 @@ export default function Header() {
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   placeholder="Search Campaigns..."
-                  className="p-1 px-4 rounded-full mx-4 bg-[#374151] w-full"
+                  className="header-search p-1 px-4 rounded-full mx-4 w-full"
                 />
               </div>
             </form>

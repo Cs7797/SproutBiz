@@ -6,43 +6,23 @@ import ProgressBar from "./ProgressBar";
 const CampaignCard = ({item}) => {
 
   return (
-    <div className="">
-     
-        <Link to={`/detailedChamapaign/${item._id}`} key={item._id}>
-          <div className=" max-w-sm  border pb-4 border-gray-300 rounded-lg shadow-lg bg-gray-100 flex flex-col">
-            <img
-              className="rounded-t-lg object-cover h-60"
-              src={item.coverImage}
-              alt=""
-            />
-            <div className="flex flex-col flex-grow px-4">
-              <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 h-16 overflow-hidden">
-                {item.title}
-              </h5>
-              <p className="text-gray-600 text-sm mt-1">
-              {item.description.substring(0, 90) }...
-                
-              </p>
-              <ProgressBar
-                value={Math.round(
-                  (item.amountGained / item.amountRequired) * 100
-                )}
-              />
-              <p className="text-gray-600 text-xl mt-2 font-semibold">
-                {item.amountGained} USD raised of {item.amountRequired} USD
-              </p>
-              <p className="text-gray-600 text-xl mt-1 font-semibold">
-               <span className="font-bold">Equity:</span>  {item.equity}%
-              </p>
-              <p className="text-gray-600 text-xl mt-1 font-semibold">
-              <span className="font-bold">Batches: </span>  {item.batches.length}
-              </p>
-              
-            </div>
-          </div>
-        </Link>
-     
-    </div>
+    <Link to={`/detailedChamapaign/${item._id}`} className="campaign-card">
+      <div className="campaign-card-image-wrap">
+        <img className="campaign-card-image" src={item.coverImage} alt={item.title} />
+        <span className="campaign-card-tag">Featured opportunity</span>
+        <span className="campaign-card-arrow" aria-hidden="true">↗</span>
+      </div>
+      <div className="campaign-card-body">
+        <h3>{item.title}</h3>
+        <p className="campaign-card-description">{(item.description || "Discover this exciting opportunity.").substring(0, 105)}{item.description?.length > 105 ? "…" : ""}</p>
+        <div className="campaign-card-progress">
+          <div className="campaign-card-raised"><span>Raised so far</span><strong>{item.amountGained} <small>USD</small></strong></div>
+          <span className="campaign-card-target">of {item.amountRequired} USD</span>
+          <ProgressBar value={Math.min(100, Math.max(0, Math.round((item.amountGained / (item.amountRequired || 1)) * 100)))} />
+        </div>
+        <div className="campaign-card-meta"><span><small>Equity</small><strong>{item.equity}%</strong></span><span><small>Investment batches</small><strong>{item.batches?.length || 0}</strong></span></div>
+      </div>
+    </Link>
   );
 };
 
